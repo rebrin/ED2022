@@ -19,7 +19,7 @@ public class TestAlumno {
         Alumnos.add(new Alumno("Carlos","Campos","Charicata",2022));
         for (int i=0;i<Alumnos.size();i++) {
             System.out.println(Alumnos.get(i));
-            
+
         }
 
        /* for (int i = 0; i < alumnos.length; i++) {
