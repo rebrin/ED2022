@@ -1,6 +1,10 @@
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TestCuentas {
     public static void main(String[] args) {
@@ -41,7 +45,24 @@ public class TestCuentas {
                 .collect(Collectors.toList());
         menorSeisMil.forEach(c-> System.out.println(c));
         //todo mostrar saldo entre 2000 y 20000
+        System.out.println("--------------------");
+        cuentas.stream().filter(c->c.getSaldo()>2000 && c.getSaldo()<20000)
+                .forEach(c-> System.out.println(c));
+        //todo ordenar las cuentas por medio de nombres
+        System.out.println("------------");
+        cuentas.stream().sorted(Comparator.comparing(Cuenta::getSaldo))
+                .forEach(cuenta -> System.out.println(cuenta));
 
+        //todo encontrar la suma de todos los saldos
+        double suma=cuentas.stream().map(Cuenta::getSaldo).reduce(0d,(a,b)->a+b);
+        System.out.println(suma);
+
+        //todo encontrar el promedio de los saldos
+
+
+        //encontrar el maximo y el minimo
+        cuentas.stream().max(Comparator.comparing(Cuenta::getSaldo)).ifPresent(System.out::println);
+        cuentas.stream().min(Comparator.comparing(Cuenta::getSaldo)).ifPresent(System.out::println);
 
     }
 }
