@@ -1,3 +1,4 @@
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ public class TestCuentas {
      Cuenta c4=new Cuenta(789526.5,"Moscu",04);
      Cuenta c5=new Cuenta(1250.5,"Rio",05);
 
-     ArrayList<Cuenta>cuentas=new ArrayList<>();
+     List<Cuenta>cuentas=new ArrayList<>();
      cuentas.add(c1);
      cuentas.add(c2);
      cuentas.add(c3);
@@ -48,7 +49,7 @@ public class TestCuentas {
         System.out.println("--------------------");
         cuentas.stream().filter(c->c.getSaldo()>2000 && c.getSaldo()<20000)
                 .forEach(c-> System.out.println(c));
-        //todo ordenar las cuentas por medio de nombres
+        //todo ordenar las cuentas por medio de saldo
         System.out.println("------------");
         cuentas.stream().sorted(Comparator.comparing(Cuenta::getSaldo))
                 .forEach(cuenta -> System.out.println(cuenta));
@@ -58,11 +59,21 @@ public class TestCuentas {
         System.out.println(suma);
 
         //todo encontrar el promedio de los saldos
+        System.out.println(suma/cuentas.size());
 
-
-        //encontrar el maximo y el minimo
+        //todo encontrar el maximo y el minimo
         cuentas.stream().max(Comparator.comparing(Cuenta::getSaldo)).ifPresent(System.out::println);
         cuentas.stream().min(Comparator.comparing(Cuenta::getSaldo)).ifPresent(System.out::println);
+
+        //todo cuentas en archivo
+        try{
+            Files.write(Paths.get("./src/cuentas.txt"),cuentas.stream()
+                    .map(cuenta -> cuenta.toString())
+                    .reduce("", (a,b)->a.toString()+b.toString()+"\n")
+                    .getBytes(StandardCharsets.UTF_8));
+        }catch (Exception e)
+        {e.printStackTrace();}
+
 
     }
 }
