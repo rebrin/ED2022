@@ -1,3 +1,5 @@
+package unidad.i;
+
 public class Producto {
     String Nombre;
     Double Precio;
