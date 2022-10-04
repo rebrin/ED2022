@@ -33,8 +33,6 @@ public class FactorialRec {
             return n*pote(n,pot-1);
     }
 
-
-
     public static void main(String[] args) {
         new FactorialRec();
     }
