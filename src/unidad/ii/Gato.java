@@ -3,61 +3,120 @@ package unidad.ii;
 import java.util.Scanner;
 
 public class Gato {
-    //tablero de juego
-    int [][] tablero=new int[3][3];
     int turno=0;
     Scanner s=new Scanner(System.in);
     public Gato(){
-        //inicilizar el tablero
+        int [][] tablero=new int[3][3];
+//        inicilizar el tablero
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero.length; j++) {
                 tablero[i][j]=-1;
             }
         }//termina inicia
-
+       //int [][] tablero={{2,2,1},{2,1,-1},{-1,-1,-1}};
         //mostrar tablero incial
-        mostrarTablero();
-        juega();
-
+        mostrarTablero(tablero);
+        juega(tablero);
     }
 
-    public void juega(){
-       while(!hayGanador()){
+    public void juega(int [][] tablero){
+       while(!hayGanador(tablero)){
             if(turno%2==0) {
-                turnoHumano();
+               turnoHumano(tablero);
             }else {
-                turnoMaquina();
+                turnoMaquina(tablero);
             }
+            mostrarTablero(tablero);
         }
         System.out.println("termino el juego");
     }
 
-    public void turnoHumano(){
-        System.out.println("introduce la posición x(1-3),y(1-3)");
+    public void turnoHumano(int [][] tablero){
+        boolean turnoVal=false;
+        while (!turnoVal){
+        System.out.println("introduce la posición x(0-2),y(0-2) fila,col");
         int x=s.nextInt();
         int y=s.nextInt();
-        if(tablero[x-1][y-1]==-1)
-           tablero[y-1][x-1]=1;
-        System.out.println();
-        mostrarTablero();
-        turno++;
+            if(tablero[x][y]==-1){
+               tablero[x][y]=1;
+                System.out.println();
+                //mostrarTablero();
+                turno++;
+                turnoVal=true;
+            }else
+                System.out.println("jugada no valida");
+        }//fin del while
     }
     //aqui va minimax
-    public void turnoMaquina(){
+    public void turnoMaquina(int [][] tablero){
+        int bestScore=Integer.MIN_VALUE;//aqui en vez de menos infinito
+        int bestI=0,bestJ=0;
+        int score=0;
         for(int i=0;i< tablero.length;i++){
             for (int j = 0; j < tablero.length; j++) {
                 if(tablero[i][j]==-1){
                     tablero[i][j]=2;
-                    mostrarTablero();
-                    turno++;
-                    return;
+                    score=minimax(tablero,0,false);
+                    tablero[i][j]=-1;
+                    if(score > bestScore){
+                        bestScore=score;
+                        bestI=i;
+                        bestJ=j;
+//                        System.out.println(score+" "+bestScore);
+//                        System.out.println(bestI+" "+bestJ);
+                    }
                 }
             }
         }
-
+        tablero[bestI][bestJ]=2;
+    //    System.out.printf("\n%d %d %d\n",bestScore,bestI,bestJ);
+        turno++;
     }
 
-    public void mostrarTablero(){
+    private int minimax(int[][] tablero,int depth, boolean isMaxim) {
+        int score=evalua(tablero);
+//        mostrarTablero(tablero);
+        System.out.println(score);
+        System.out.println();
+        if (score==1)//gana MAX
+            return score;
+        if(score==-1)//gana MIN
+            return score;
+        if(isMovesLeft(tablero)==false) //ya no hay elementos
+            return 0;
+        if(isMaxim){
+            int punt=0;
+            int bestScore=Integer.MIN_VALUE;
+            for (int i = 0; i < tablero.length; i++) {
+                for (int j = 0; j < tablero.length; j++) {
+                    if(tablero[i][j]==-1){//si esta disponible el espacio
+                        tablero[i][j]=2;//escribe el valor de la IA
+                        bestScore=Math.max(bestScore,minimax(tablero,depth+1,false));
+                        tablero[i][j]=-1;//deshace el tiro
+                    }
+                }
+            }
+            return bestScore;
+        }//fin de if maxim
+        else { //es un turno de jugador
+            int punt=0;
+            int bestScore=Integer.MAX_VALUE;
+            for (int i = 0; i < tablero.length; i++) {
+                for (int j = 0; j < tablero.length; j++) {
+                    if(tablero[i][j]==-1){//si esta disponible el espacio
+                        tablero[i][j]=1;//escribe el valor del jugador
+//                        punt=minimax(tablero,depth+1,true);//turno de min
+                        bestScore=Math.min(bestScore,minimax(tablero,depth+1,true));
+                        tablero[i][j]=-1;//deshace el tiro
+//                        bestScore=Integer.min(punt,bestScore);
+                    }
+                }
+            }
+            return bestScore;
+        }
+    }
+
+    public void mostrarTablero(int [][] tablero){
         //1 nosotros, 2 la maquina, -1 vacio
         for (int i = 0; i < tablero.length; i++) {
             for (int j = 0; j < tablero.length; j++) {
@@ -71,19 +130,63 @@ public class Gato {
         }
     }
 
+    //esta función se encarga de evaluar quien gana, -1 gano, 1 gana la máquina, 0 empate o sigue
+    public int evalua(int [][] tablero){
+        for (int row = 0; row<3; row++)
+        {
+            if (tablero[row][0]==tablero[row][1] &&
+                    tablero[row][1]==tablero[row][2])
+            {
+                if (tablero[row][0]==1)
+                    return -1;
+                else if (tablero[row][0]==2)
+                    return 1;
+            }
+        }
+
+        // verificamos las columnas.
+        for (int col = 0; col<3; col++)
+        {
+            if (tablero[0][col]==tablero[1][col] &&
+                    tablero[1][col]==tablero[2][col])
+            {
+                if (tablero[0][col]==1)
+                    return -1;
+                else if (tablero[0][col]==2)
+                    return 1;
+            }
+        }
+        // verificamos las diagonales.
+        if (tablero[0][0]==tablero[1][1] && tablero[1][1]==tablero[2][2])
+        {
+            if (tablero[0][0]==1)
+                return -1;
+            else if (tablero[0][0]==2)
+                return 1;
+        }
+        if (tablero[0][2]==tablero[1][1] && tablero[1][1]==tablero[2][0])
+        {
+            if (tablero[0][2]==1)
+                return -1;
+            else if (tablero[0][2]==2)
+                return 1;
+        }
+        // si no hay ganador regresamos 0
+        return 0;
+    }
     //determina si hay ganador
-    public boolean hayGanador(){
-        if(tablero[0][0]==tablero[0][1] && tablero[0][1]==tablero[0][2] &&tablero[0][0]!=-1 )
+    public boolean hayGanador(int[][] tablero){
+        if(tablero[0][0]==tablero[0][1] && tablero[0][1]==tablero[0][2] && tablero[0][0]!=-1 )
             return true; //fila superior
         if(tablero[1][0]==tablero[1][1] && tablero[1][1]==tablero[1][2] && tablero[1][0]!=-1)
             return true;//fila media
         if(tablero[2][0]==tablero[2][1] && tablero[2][1]==tablero[2][2] && tablero[2][0]!=-1)
             return true; //fila inferior
-        if(tablero[0][0]==tablero[1][0] && tablero[1][0]==tablero[2][0] &&tablero[0][0]!=-1)
+        if(tablero[0][0]==tablero[1][0] && tablero[1][0]==tablero[2][0] && tablero[0][0]!=-1)
             return true;//columnas
-        if(tablero[0][1]==tablero[1][1] && tablero[1][1]==tablero[2][1] &&tablero[0][1]!=-1)
+        if(tablero[0][1]==tablero[1][1] && tablero[1][1]==tablero[2][1] && tablero[0][1]!=-1)
             return true;
-        if(tablero[0][2]==tablero[1][2] && tablero[1][2]==tablero[2][2] &&tablero[1][2]!=-1)
+        if(tablero[0][2]==tablero[1][2] && tablero[1][2]==tablero[2][2] && tablero[1][2]!=-1)
             return true;
         if(tablero[0][0]==tablero[1][1] && tablero[1][1]==tablero[2][2]&&tablero[0][0]!=-1)
             return true;//diagonales
@@ -93,16 +196,14 @@ public class Gato {
             return false;
     }
 
-    public boolean hayEspacios(){
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero.length; j++) {
-                if(tablero[i][j]==-1)
+    boolean isMovesLeft(int [][] tablero)
+    {
+        for (int i = 0; i<3; i++)
+            for (int j = 0; j<3; j++)
+                if (tablero[i][j]==-1)
                     return true;
-            }
-        }
         return false;
     }
-
     public static void main(String[] args) {
         new Gato();
     }
