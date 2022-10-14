@@ -20,7 +20,7 @@ public class Gato {
     }
 
     public void juega(int [][] tablero){
-       while(!hayGanador(tablero)){
+       while(isMovesLeft(tablero)&&!hayGanador(tablero)){
             if(turno%2==0) {
                turnoHumano(tablero);
             }else {
@@ -76,7 +76,7 @@ public class Gato {
     private int minimax(int[][] tablero,int depth, boolean isMaxim) {
         int score=evalua(tablero);
 //        mostrarTablero(tablero);
-        System.out.println(score);
+//        System.out.println(score);
         System.out.println();
         if (score==1)//gana MAX
             return score;
