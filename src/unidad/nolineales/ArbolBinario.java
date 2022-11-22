@@ -1,11 +1,13 @@
 package unidad.nolineales;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 public class ArbolBinario {
     BSTNode root;
+    ArrayList<Integer> arr;
     public ArbolBinario(){
-        root=null;
+        root=null; arr=new ArrayList<>();
     }
     public boolean vacia(){
         return root==null;
@@ -121,25 +123,48 @@ public class ArbolBinario {
             System.out.println("el elemento "+el+" no se encuentra");
         }else System.out.println("el árbol está vacio");
     }
+
+    public void balanceaArbol(){
+        arr.clear();
+        creaArreglo(root);
+        root=null;//borramos el arbol
+        Integer[] elArr=arr.toArray(new Integer[0]);
+        balance(elArr,0,(elArr.length-1));
+    }
+    public void creaArreglo(BSTNode p){
+        if(p!=null){
+            creaArreglo(p.left);
+            arr.add(p.info);
+            creaArreglo(p.right);
+        }
+    }
+
+    public void balance(Integer[] arr,int imin,int imax){
+        if(imin<=imax){
+            int mitad=(imin+imax)/2;
+            insertar(arr[mitad]);
+            balance(arr,imin,mitad-1);
+            balance(arr,mitad+1,imax);
+        }
+    }
     public static void main(String[] args) {
         ArbolBinario ab=new ArbolBinario();
-        ab.insertar(13);
-        ab.insertar(10);
-        ab.insertar(25);
+        ab.insertar(1);
         ab.insertar(2);
-        ab.insertar(12);
-        ab.insertar(20);
-        ab.insertar(31);
-        ab.insertar(29);
-//      ab.recorridoAnchura();
+        ab.insertar(3);
+        ab.insertar(4);
+        ab.insertar(5);
+        ab.insertar(6);
+        //      ab.recorridoAnchura();
 //      ab.preOrden(ab.root);
 //        System.out.println();
-      ab.inOrden(ab.root);
+//      ab.inOrden(ab.root);
 //        System.out.println();
 //      ab.posOrden(ab.root);
-        ab.delete(2);
-        ab.delete(31);
+//        ab.delete(2);
+//        ab.delete(31);
+        ab.balanceaArbol();
         System.out.println();
-        ab.inOrden(ab.root);
+//        ab.inOrden(ab.root);
     }//fin de main
 }//fin de clase
